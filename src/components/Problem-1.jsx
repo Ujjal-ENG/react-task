@@ -21,8 +21,20 @@ const Problem1 = () => {
     setStatus("");
   };
 
+  const sortedTasks = tasks.sort((a, b) => {
+    if (a.status === "active" && b.status === "completed") {
+      return -1;
+    } else if (a.status === "completed" && b.status === "active") {
+      return 1;
+    } else {
+      return 0;
+    }
+  });
+
   const filteredTasks =
-    show === "all" ? tasks : tasks.filter((task) => task.status === show);
+    show === "all"
+      ? sortedTasks
+      : sortedTasks.filter((task) => task.status === show);
 
   return (
     <div className="container">
