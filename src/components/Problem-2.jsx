@@ -9,13 +9,15 @@ const Problem2 = () => {
   const [modalShow, setModalShow] = useState(false);
   const [page, setPage] = useState(1);
   const [showEvenIds, setShowEvenIds] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         let url = `https://contact.mediusware.com/api/contacts/?page=${page}&page_size=20`;
-        if (onlyUsData) {
-          url += "&country=United States";
+
+        if (searchTerm) {
+          url += `&search=${searchTerm}`;
         }
         const { data } = await axios.get(url);
         setContacts((prevContacts) => [...prevContacts, ...data.results]);
@@ -35,7 +37,7 @@ const Problem2 = () => {
     };
     fetchUsData();
     fetchData();
-  }, [allContactsClicked, page, onlyUsData]);
+  }, [allContactsClicked, page, onlyUsData, searchTerm]);
 
   const handleScroll = (e) => {
     const { scrollTop, clientHeight, scrollHeight } = e.target;
@@ -51,20 +53,20 @@ const Problem2 = () => {
 
   const handleClickOnlyUs = () => {
     setOnlyUsData((prevState) => !prevState);
-    setPage(1); // Reset page number when switching between All and US contacts
-    setContacts([]); // Clear existing contacts when switching between All and US contacts
-    setModalShow(true); // Show the modal when switching to US contacts
+    setPage(1);
+    setContacts([]);
+    setModalShow(true);
   };
 
   const handleCheckboxChange = () => {
     setShowEvenIds((prevState) => !prevState);
   };
 
-  console.log(contacts);
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
 
-  const filteredContacts = showEvenIds
-    ? contacts.filter((contact) => contact.phone.id % 2 === 0)
-    : contacts;
+  const showModal = allContactsClicked || (onlyUsData && modalShow);
 
   return (
     <div className="container">
@@ -90,62 +92,76 @@ const Problem2 = () => {
         </div>
       </div>
 
-      <div
-        className={`modal fade ${modalShow ? "show" : ""}`}
-        tabIndex="-1"
-        style={{ display: modalShow ? "block" : "none" }}
-      >
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h1 className="modal-title fs-5" id="staticBackdropLabel">
-                Modal title
-              </h1>
-            </div>
-            <div className="modal-body card" onScroll={handleScroll}>
-              {filteredContacts.map((contact, idx) => (
-                <div
-                  key={idx}
-                  className="d-flex justify-content-between card-body"
-                >
-                  <p>Phone: {contact.phone}</p>
-                  <p>Country: {contact.country.name}</p>
+      {showModal && (
+        <div
+          className={`modal fade ${modalShow ? "show" : ""}`}
+          tabIndex="-1"
+          style={{ display: modalShow ? "block" : "none" }}
+        >
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h1 className="modal-title fs-5" id="staticBackdropLabel">
+                  Modal title
+                </h1>
+              </div>
+              <div className="modal-body card" onScroll={handleScroll}>
+                <div className="mb-3">
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Search..."
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                  />
                 </div>
-              ))}
-            </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => setModalShow(false)}
-                style={{ backgroundColor: "#46139f" }}
-              >
-                Button A
-              </button>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => setModalShow(false)}
-                style={{ backgroundColor: "#ff7f50" }}
-              >
-                Button B
-              </button>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => setModalShow(false)}
-                style={{
-                  backgroundColor: "#fff",
-                  borderBlockColor: "#46139f",
-                  color: "black",
-                }}
-              >
-                Button C
-              </button>
+                {contacts &&
+                  contacts.map((contact, idx) => (
+                    <div
+                      key={idx}
+                      className="d-flex justify-content-between card-body"
+                    >
+                      <p>Phone: {contact.phone}</p>
+                      <p>Country: {contact.country.name}</p>
+                    </div>
+                  ))}
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setModalShow(false)}
+                  style={{ backgroundColor: "#46139f" }}
+                >
+                  Button A
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setModalShow(false)}
+                  style={{ backgroundColor: "#ff7f50" }}
+                >
+                  Button B
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setModalShow(false)}
+                  style={{
+                    backgroundColor: "#fff",
+                    borderBlockColor: "#46139f",
+                    color: "black",
+                  }}
+                >
+                  Button C
+                </button>
+              </div>
+              ;
             </div>
           </div>
         </div>
-      </div>
+      )}
+
       <div className="form-check">
         <input
           className="form-check-input"
