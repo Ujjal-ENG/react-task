@@ -10,7 +10,7 @@ const Problem2 = () => {
   const [page, setPage] = useState(1);
   const [showEvenIds, setShowEvenIds] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-
+  console.log(searchTerm);
   useEffect(() => {
     const fetchData = async () => {
       try {
