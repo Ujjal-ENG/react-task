@@ -11,11 +11,14 @@ const Problem2 = () => {
   const [showEvenIds, setShowEvenIds] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [data, setData] = useState([]);
-  console.log(searchTerm);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         let url = `https://contact.mediusware.com/api/contacts/?page=${page}&page_size=20`;
+        if (searchTerm) {
+          url += `&search=${searchTerm}`;
+        }
         const { data } = await axios.get(url);
         setContacts((prevContacts) => [...prevContacts, ...data.results]);
       } catch (error) {
