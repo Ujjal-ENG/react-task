@@ -10,15 +10,12 @@ const Problem2 = () => {
   const [page, setPage] = useState(1);
   const [showEvenIds, setShowEvenIds] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [data, setData] = useState([]);
   console.log(searchTerm);
   useEffect(() => {
     const fetchData = async () => {
       try {
         let url = `https://contact.mediusware.com/api/contacts/?page=${page}&page_size=20`;
-
-        if (searchTerm) {
-          url += `&search=${searchTerm}`;
-        }
         const { data } = await axios.get(url);
         setContacts((prevContacts) => [...prevContacts, ...data.results]);
       } catch (error) {
@@ -28,7 +25,7 @@ const Problem2 = () => {
     const fetchUsData = async () => {
       try {
         const { data } = await axios.get(
-          "https://contact.mediusware.com/api/country-contacts/United States/"
+          `https://contact.mediusware.com/api/country-contacts/United States/?page=${page}&page_size=20`
         );
         setUsaData(data.results);
       } catch (error) {
@@ -49,6 +46,7 @@ const Problem2 = () => {
   const handleClick = () => {
     setAllContactsClicked((prevState) => !prevState);
     setModalShow(true);
+    setData(contacts);
   };
 
   const handleClickOnlyUs = () => {
@@ -56,6 +54,7 @@ const Problem2 = () => {
     setPage(1);
     setContacts([]);
     setModalShow(true);
+    setData(usaData);
   };
 
   const handleCheckboxChange = () => {
@@ -115,8 +114,8 @@ const Problem2 = () => {
                     onChange={handleSearchChange}
                   />
                 </div>
-                {contacts &&
-                  contacts.map((contact, idx) => (
+                {data &&
+                  data.map((contact, idx) => (
                     <div
                       key={idx}
                       className="d-flex justify-content-between card-body"
